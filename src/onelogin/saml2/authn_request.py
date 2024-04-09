@@ -20,7 +20,7 @@ class OneLogin_Saml2_Authn_Request(object):
 
     """
 
-    def __init__(self, settings, force_authn=False, is_passive=False, set_nameid_policy=True, name_id_value_req=None):
+    def __init__(self, settings, force_authn=False, is_passive=False, set_nameid_policy=True, name_id_value_req=None, audience_restriction=None):
         """
         Constructs the AuthnRequest object.
 
@@ -107,6 +107,13 @@ class OneLogin_Saml2_Authn_Request(object):
         attr_consuming_service_str = ''
         if 'attributeConsumingService' in sp_data and sp_data['attributeConsumingService']:
             attr_consuming_service_str = "\n    AttributeConsumingServiceIndex=\"%s\"" % sp_data['attributeConsumingService'].get('index', '1')
+        custom_saml_str = ''
+        if audience_restriction:
+            custom_saml_str = f"""\n    <saml:Conditions xmlns:saml="urn:oasis:names:to:SAML:2.0:assertion">
+        <saml:AudienceRestriction>
+            <saml:Audience>{audience_restriction}</saml:Audience>
+        </saml:AudienceRestriction>
+    </saml:Conditions>"""
 
         request = OneLogin_Saml2_Templates.AUTHN_REQUEST % \
             {
@@ -122,7 +129,8 @@ class OneLogin_Saml2_Authn_Request(object):
                 'nameid_policy_str': nameid_policy_str,
                 'requested_authn_context_str': requested_authn_context_str,
                 'attr_consuming_service_str': attr_consuming_service_str,
-                'acs_binding': sp_data['assertionConsumerService'].get('binding', 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST')
+                'acs_binding': sp_data['assertionConsumerService'].get('binding', 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST'),
+                'custom_saml_str': custom_saml_str
             }
 
         self._authn_request = request
