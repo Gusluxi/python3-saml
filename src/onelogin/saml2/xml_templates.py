@@ -27,7 +27,7 @@ class OneLogin_Saml2_Templates(object):
   Destination="%(destination)s"
   ProtocolBinding="%(acs_binding)s"
   AssertionConsumerServiceURL="%(assertion_url)s"%(attr_consuming_service_str)s>
-    <saml2:Issuer xmlns:saml2="urn:oasis:names:tc:SAML:2.0:assertion"=>%(entity_id)s</saml2:Issuer>%(subject_str)s%(nameid_policy_str)s
+    <saml2:Issuer xmlns:saml2="urn:oasis:names:tc:SAML:2.0:assertion">%(entity_id)s</saml2:Issuer>%(subject_str)s%(nameid_policy_str)s
 %(requested_authn_context_str)s
 %(custom_saml_str)s
 </saml2p:AuthnRequest>"""
