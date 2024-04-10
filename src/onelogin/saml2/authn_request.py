@@ -20,7 +20,7 @@ class OneLogin_Saml2_Authn_Request(object):
 
     """
 
-    def __init__(self, settings, force_authn=False, is_passive=False, set_nameid_policy=True, name_id_value_req=None, audience_restriction=None):
+    def __init__(self, settings, force_authn=False, is_passive=False, set_nameid_policy=True, name_id_value_req=None, custom_saml=None):
         """
         Constructs the AuthnRequest object.
 
@@ -108,10 +108,8 @@ class OneLogin_Saml2_Authn_Request(object):
         if 'attributeConsumingService' in sp_data and sp_data['attributeConsumingService']:
             attr_consuming_service_str = "\n    AttributeConsumingServiceIndex=\"%s\"" % sp_data['attributeConsumingService'].get('index', '1')
         custom_saml_str = ''
-        if audience_restriction:
-            custom_saml_str = f"""\n    <AudienceRestriction>
-            <Audience>{audience_restriction}</Audience>
-    </AudienceRestriction>"""
+        if custom_saml:
+            custom_saml_str = custom_saml
 
         request = OneLogin_Saml2_Templates.AUTHN_REQUEST % \
             {
