@@ -18,7 +18,6 @@ class OneLogin_Saml2_Templates(object):
         </saml:Attribute>"""
 
     AUTHN_REQUEST = """\
-<?xml version="1.0" encoding="sion="1.0"?>
 <q1:AuthnRequest
   xmlns:q1="urn:oasis:names:tc:SAML:2.0:protocol"
   xmlns:saml2="urn:oasis:names:tc:SAML:2.0:assertion"
