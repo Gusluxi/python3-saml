@@ -109,11 +109,9 @@ class OneLogin_Saml2_Authn_Request(object):
             attr_consuming_service_str = "\n    AttributeConsumingServiceIndex=\"%s\"" % sp_data['attributeConsumingService'].get('index', '1')
         custom_saml_str = ''
         if audience_restriction:
-            custom_saml_str = f"""\n    <Conditions xmlns="urn:oasis:names:tc:SAML:2.0:assertion">
-        <AudienceRestriction>
+            custom_saml_str = f"""\n    <AudienceRestriction>
             <Audience>{audience_restriction}</Audience>
-        </AudienceRestriction>
-    </Conditions>"""
+    </AudienceRestriction>"""
 
         request = OneLogin_Saml2_Templates.AUTHN_REQUEST % \
             {
