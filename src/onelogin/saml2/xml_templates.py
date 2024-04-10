@@ -18,19 +18,24 @@ class OneLogin_Saml2_Templates(object):
         </saml:Attribute>"""
 
     AUTHN_REQUEST = """\
-<saml2p:AuthnRequest
-  xmlns:saml2p="urn:oasis:names:tc:SAML:2.0:protocol"
+<?xml version="1.0" encoding="sion="1.0"?>
+<q1:AuthnRequest
+  xmlns:q1="urn:oasis:names:tc:SAML:2.0:protocol"
   xmlns:saml2="urn:oasis:names:tc:SAML:2.0:assertion"
   ID="%(id)s"
   Version="2.0"%(provider_name)s%(force_authn_str)s%(is_passive_str)s
+  IsPassive="false"
   IssueInstant="%(issue_instant)s"
   Destination="%(destination)s"
   ProtocolBinding="%(acs_binding)s"
   AssertionConsumerServiceURL="%(assertion_url)s"%(attr_consuming_service_str)s>
-    <saml2:Issuer xmlns:saml2="urn:oasis:names:tc:SAML:2.0:assertion">%(entity_id)s</saml2:Issuer>%(subject_str)s%(nameid_policy_str)s
-%(requested_authn_context_str)s
+    <Issuer xmlns="urn:oasis:names:tc:SAML:2.0:assertion">%(entity_id)s</Issuer>
+
+ <q1:RequestedAuthnContext Comparison="minimum">
+  <AuthnContextClassRef xmlns="urn:oasis:names:tc:SAML:2.0:assertion">urn:dk:gov:saml:attribute:AssuranceLevel:3</AuthnContextClassRef>
+ </q1:RequestedAuthnContext>
 %(custom_saml_str)s
-</saml2p:AuthnRequest>"""
+<q1:AuthnRequest>"""
 
     LOGOUT_REQUEST = """\
 <samlp:LogoutRequest
