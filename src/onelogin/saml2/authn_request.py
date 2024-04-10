@@ -113,7 +113,7 @@ class OneLogin_Saml2_Authn_Request(object):
         <AudienceRestriction>
             <Audience>{audience_restriction}</Audience>
         </AudienceRestriction>
-    <Conditions>"""
+    </Conditions>"""
 
         request = OneLogin_Saml2_Templates.AUTHN_REQUEST % \
             {

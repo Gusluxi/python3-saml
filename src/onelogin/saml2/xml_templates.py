@@ -29,12 +29,11 @@ class OneLogin_Saml2_Templates(object):
   ProtocolBinding="%(acs_binding)s"
   AssertionConsumerServiceURL="%(assertion_url)s"%(attr_consuming_service_str)s>
     <Issuer xmlns="urn:oasis:names:tc:SAML:2.0:assertion">%(entity_id)s</Issuer>
-
- <q1:RequestedAuthnContext Comparison="minimum">
-  <AuthnContextClassRef xmlns="urn:oasis:names:tc:SAML:2.0:assertion">urn:dk:gov:saml:attribute:AssuranceLevel:3</AuthnContextClassRef>
- </q1:RequestedAuthnContext>
-%(custom_saml_str)s
-<q1:AuthnRequest>"""
+    <q1:RequestedAuthnContext Comparison="minimum">
+      <AuthnContextClassRef xmlns="urn:oasis:names:tc:SAML:2.0:assertion">urn:dk:gov:saml:attribute:AssuranceLevel:3</AuthnContextClassRef>
+    </q1:RequestedAuthnContext>
+  %(custom_saml_str)s
+</q1:AuthnRequest>"""
 
     LOGOUT_REQUEST = """\
 <samlp:LogoutRequest
