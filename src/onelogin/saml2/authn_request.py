@@ -110,7 +110,7 @@ class OneLogin_Saml2_Authn_Request(object):
         custom_saml_str = ''
         if audience_restriction:
             custom_saml_str = f"""\n    <Conditions xmlns="urn:oasis:names:tc:SAML:2.0:assertion">
-        <sAudienceRestriction>
+        <AudienceRestriction>
             <Audience>{audience_restriction}</Audience>
         </AudienceRestriction>
     <Conditions>"""
