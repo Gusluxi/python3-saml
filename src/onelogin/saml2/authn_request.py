@@ -74,10 +74,10 @@ class OneLogin_Saml2_Authn_Request(object):
         subject_str = ''
         if name_id_value_req:
             subject_str = """
-    <saml:Subject>
-        <saml:NameID Format="%s">%s</saml:NameID>
-        <saml:SubjectConfirmation Method="urn:oasis:names:tc:SAML:2.0:cm:bearer"></saml:SubjectConfirmation>
-    </saml:Subject>""" % (sp_data['NameIDFormat'], name_id_value_req)
+    <saml2:Subject>
+        <saml2:NameID Format="%s">%s</saml2:NameID>
+        <saml2:SubjectConfirmation Method="urn:oasis:names:tc:SAML:2.0:cm:bearer"></saml2:SubjectConfirmation>
+    </saml2:Subject>""" % (sp_data['NameIDFormat'], name_id_value_req)
 
         nameid_policy_str = ''
         if set_nameid_policy:
@@ -86,7 +86,7 @@ class OneLogin_Saml2_Authn_Request(object):
                 name_id_policy_format = OneLogin_Saml2_Constants.NAMEID_ENCRYPTED
 
             nameid_policy_str = """
-    <samlp:NameIDPolicy
+    <saml2p:NameIDPolicy
         Format="%s"
         AllowCreate="true" />""" % name_id_policy_format
 
@@ -95,25 +95,25 @@ class OneLogin_Saml2_Authn_Request(object):
             authn_comparison = security['requestedAuthnContextComparison']
 
             if security['requestedAuthnContext'] is True:
-                requested_authn_context_str = """    <samlp:RequestedAuthnContext Comparison="%s">
-        <saml:AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport</saml:AuthnContextClassRef>
-    </samlp:RequestedAuthnContext>""" % authn_comparison
+                requested_authn_context_str = """    <saml2p:RequestedAuthnContext Comparison="%s">
+        <saml2:AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport</saml2:AuthnContextClassRef>
+    </saml2p:RequestedAuthnContext>""" % authn_comparison
             else:
                 requested_authn_context_str = '     <samlp:RequestedAuthnContext Comparison="%s">' % authn_comparison
                 for authn_context in security['requestedAuthnContext']:
-                    requested_authn_context_str += '<saml:AuthnContextClassRef>%s</saml:AuthnContextClassRef>' % authn_context
-                requested_authn_context_str += '    </samlp:RequestedAuthnContext>'
+                    requested_authn_context_str += '<saml2:AuthnContextClassRef>%s</saml2:AuthnContextClassRef>' % authn_context
+                requested_authn_context_str += '    </saml2p:RequestedAuthnContext>'
 
         attr_consuming_service_str = ''
         if 'attributeConsumingService' in sp_data and sp_data['attributeConsumingService']:
             attr_consuming_service_str = "\n    AttributeConsumingServiceIndex=\"%s\"" % sp_data['attributeConsumingService'].get('index', '1')
         custom_saml_str = ''
         if audience_restriction:
-            custom_saml_str = f"""\n    <saml:Conditions xmlns:saml="urn:oasis:names:to:SAML:2.0:assertion">
-        <saml:AudienceRestriction>
-            <saml:Audience>{audience_restriction}</saml:Audience>
-        </saml:AudienceRestriction>
-    </saml:Conditions>"""
+            custom_saml_str = f"""\n    <saml2:Conditions xmlns:saml2="urn:oasis:names:to:SAML:2.0:assertion">
+        <saml2:AudienceRestriction>
+            <saml2:Audience>{audience_restriction}</saml2:Audience>
+        </saml2:AudienceRestriction>
+    </saml2:Conditions>"""
 
         request = OneLogin_Saml2_Templates.AUTHN_REQUEST % \
             {
