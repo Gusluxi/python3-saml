@@ -118,6 +118,8 @@ class OneLogin_Saml2_Auth(object):
         self._last_assertion_not_on_or_after = response.get_assertion_not_on_or_after()
 
     def process_response(self, request_id=None):
+        logger.info("Processing Response")
+        print("Processing Response")
         """
         Process the SAML Response sent by the IdP.
 
@@ -130,11 +132,11 @@ class OneLogin_Saml2_Auth(object):
         self._error_reason = None
 
         if 'post_data' in self._request_data and 'SAMLResponse' in self._request_data['post_data']:
-            logger.debug("Processing SAML Response from IdP.")
+            logger.info("Processing SAML Response from IdP.")
             # AuthnResponse -- HTTP_POST Binding
             response = self.response_class(self._settings, self._request_data['post_data']['SAMLResponse'])
             self._last_response = response.get_xml_document()
-            logger.debug("SAML Response XML: %s", self._last_response)
+            logger.info("SAML Response XML: %s", self._last_response)
 
             if response.is_valid(self._request_data, request_id):
                 logger.info("SAML Response is valid.")
