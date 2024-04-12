@@ -7,6 +7,7 @@ Auxiliary class of SAML Python Toolkit.
 
 """
 
+import logging
 import base64
 import warnings
 from copy import deepcopy
@@ -27,6 +28,9 @@ from onelogin.saml2.constants import OneLogin_Saml2_Constants
 from onelogin.saml2.errors import OneLogin_Saml2_Error, OneLogin_Saml2_ValidationError
 from onelogin.saml2.xml_utils import OneLogin_Saml2_XML
 
+# Configure logging
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
 try:
     from urllib.parse import quote_plus, urlsplit, urlunsplit  # py3
@@ -679,18 +683,24 @@ class OneLogin_Saml2_Utils(object):
         :returns: The decrypted element.
         :rtype: lxml.etree.Element
         """
-
+        logger.info("decrpyting data")
         if isinstance(encrypted_data, Element):
+            logger.info("it is instance element class")
             encrypted_data = OneLogin_Saml2_XML.to_etree(str(encrypted_data.toxml()))
         if not inplace and isinstance(encrypted_data, OneLogin_Saml2_XML._element_class):
+            logger.info("it is not inplace but it is instance XML element class data")
             encrypted_data = deepcopy(encrypted_data)
         elif isinstance(encrypted_data, OneLogin_Saml2_XML._text_class):
+            logger.info("it is instance XML text class data")
             encrypted_data = OneLogin_Saml2_XML._parse_etree(encrypted_data)
-
+        logger.info("Getting debug_trace if debug is true")
         xmlsec.enable_debug_trace(debug)
+        logger.info("Getting keysmanager")
         manager = xmlsec.KeysManager()
 
+        logger.info("Adding key to manager from memory")
         manager.add_key(xmlsec.Key.from_memory(key, xmlsec.KeyFormat.PEM, None))
+        logger.info("something: enc_ctx = xmlsec.EncrpytionContext(manager)")
         enc_ctx = xmlsec.EncryptionContext(manager)
         return enc_ctx.decrypt(encrypted_data)
 
