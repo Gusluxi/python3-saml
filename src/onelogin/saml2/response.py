@@ -59,6 +59,7 @@ class OneLogin_Saml2_Response(object):
             logger.info("Encrypted assertion found, starting decryption")
             try:
                 decrypted_document = deepcopy(self.document)
+                logger.info("Document decrypted")
                 self.encrypted = True
                 self.decrypted_document = self._decrypt_assertion(decrypted_document)
                 logger.info("Decrypted SAML assertion")
