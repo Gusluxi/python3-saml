@@ -36,13 +36,15 @@ class OneLogin_Saml2_Response(object):
         :param response: The base64 encoded, XML string containing the samlp:Response
         :type response: string
         """
-        logger.debug("Initializing SAML response object")
+        logger.info("RESPONSE: Initializing SAML response object")
         self._settings = settings
         self._error = None
         try:
+            logger.info("RESPONSE: decoding b64")
             self.response = OneLogin_Saml2_Utils.b64decode(response)
+            logger.info("RESPONSE: XML to etree")
             self.document = OneLogin_Saml2_XML.to_etree(self.response)
-            logger.debug("Decoded and parsed SAML response XML")
+            logger.info("Decoded and parsed SAML response XML")
         except Exception as e:
             logger.error("Failed to decode or parse SAML response: %s", e)
             raise
@@ -54,17 +56,17 @@ class OneLogin_Saml2_Response(object):
         # Quick check for the presence of EncryptedAssertion
         encrypted_assertion_nodes = self._query('/samlp:Response/saml:EncryptedAssertion')
         if encrypted_assertion_nodes:
-            logger.debug("Encrypted assertion found, starting decryption")
+            logger.info("Encrypted assertion found, starting decryption")
             try:
                 decrypted_document = deepcopy(self.document)
                 self.encrypted = True
                 self.decrypted_document = self._decrypt_assertion(decrypted_document)
-                logger.debug("Decrypted SAML assertion")
+                logger.info("Decrypted SAML assertion")
             except Exception as e:
                 logger.error("Error decrypting SAML assertion: %s", e)
                 raise
         else:
-            logger.debug("No encrypted assertion found in SAML response")
+            logger.info("No encrypted assertion found in SAML response")
 
 
     def is_valid(self, request_data, request_id=None, raise_exceptions=False):

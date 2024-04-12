@@ -135,6 +135,7 @@ class OneLogin_Saml2_Auth(object):
             logger.info("Processing SAML Response from IdP.")
             # AuthnResponse -- HTTP_POST Binding
             response = self.response_class(self._settings, self._request_data['post_data']['SAMLResponse'])
+            logger.info("getting XML SAML Response.")
             self._last_response = response.get_xml_document()
             logger.info("SAML Response XML: %s", self._last_response)
 
