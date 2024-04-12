@@ -10,6 +10,7 @@ Initializes the SP SAML instance
 """
 
 import xmlsec
+import logging
 
 from onelogin.saml2 import compat
 from onelogin.saml2.authn_request import OneLogin_Saml2_Authn_Request
@@ -21,6 +22,11 @@ from onelogin.saml2.settings import OneLogin_Saml2_Settings
 from onelogin.saml2.utils import OneLogin_Saml2_Utils, OneLogin_Saml2_Error, OneLogin_Saml2_ValidationError
 from onelogin.saml2.xmlparser import tostring
 
+
+
+# Configure logging at the beginning of your script or in a separate configuration file
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 class OneLogin_Saml2_Auth(object):
     """
@@ -124,23 +130,29 @@ class OneLogin_Saml2_Auth(object):
         self._error_reason = None
 
         if 'post_data' in self._request_data and 'SAMLResponse' in self._request_data['post_data']:
+            logger.debug("Processing SAML Response from IdP.")
             # AuthnResponse -- HTTP_POST Binding
             response = self.response_class(self._settings, self._request_data['post_data']['SAMLResponse'])
             self._last_response = response.get_xml_document()
+            logger.debug("SAML Response XML: %s", self._last_response)
 
             if response.is_valid(self._request_data, request_id):
+                logger.info("SAML Response is valid.")
                 self.store_valid_response(response)
             else:
                 self._errors.append('invalid_response')
                 self._error_reason = response.get_error()
+                logger.error("SAML Response validation failed: %s", self._error_reason)
 
         else:
             self._errors.append('invalid_binding')
+            logger.error("Error: SAML Response not found, only HTTP_POST Binding is supported.")
             raise OneLogin_Saml2_Error(
                 'SAML Response not found, Only supported HTTP_POST Binding',
                 OneLogin_Saml2_Error.SAML_RESPONSE_NOT_FOUND
             )
 
+            
     def process_slo(self, keep_local_session=False, request_id=None, delete_session_cb=None):
         """
         Process the SAML Logout Response / Logout Request sent by the IdP.

@@ -7,10 +7,15 @@ SAML Response class of SAML Python Toolkit.
 
 """
 
+import logging
 from copy import deepcopy
 from onelogin.saml2.constants import OneLogin_Saml2_Constants
 from onelogin.saml2.utils import OneLogin_Saml2_Utils, OneLogin_Saml2_Error, OneLogin_Saml2_ValidationError, return_false_on_exception
 from onelogin.saml2.xml_utils import OneLogin_Saml2_XML
+
+# Configure logging
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
 
 class OneLogin_Saml2_Response(object):
@@ -31,20 +36,36 @@ class OneLogin_Saml2_Response(object):
         :param response: The base64 encoded, XML string containing the samlp:Response
         :type response: string
         """
+        logger.debug("Initializing SAML response object")
         self._settings = settings
         self._error = None
-        self.response = OneLogin_Saml2_Utils.b64decode(response)
-        self.document = OneLogin_Saml2_XML.to_etree(self.response)
+        try:
+            self.response = OneLogin_Saml2_Utils.b64decode(response)
+            self.document = OneLogin_Saml2_XML.to_etree(self.response)
+            logger.debug("Decoded and parsed SAML response XML")
+        except Exception as e:
+            logger.error("Failed to decode or parse SAML response: %s", e)
+            raise
+
         self.decrypted_document = None
-        self.encrypted = None
+        self.encrypted = False
         self.valid_scd_not_on_or_after = None
 
         # Quick check for the presence of EncryptedAssertion
         encrypted_assertion_nodes = self._query('/samlp:Response/saml:EncryptedAssertion')
         if encrypted_assertion_nodes:
-            decrypted_document = deepcopy(self.document)
-            self.encrypted = True
-            self.decrypted_document = self._decrypt_assertion(decrypted_document)
+            logger.debug("Encrypted assertion found, starting decryption")
+            try:
+                decrypted_document = deepcopy(self.document)
+                self.encrypted = True
+                self.decrypted_document = self._decrypt_assertion(decrypted_document)
+                logger.debug("Decrypted SAML assertion")
+            except Exception as e:
+                logger.error("Error decrypting SAML assertion: %s", e)
+                raise
+        else:
+            logger.debug("No encrypted assertion found in SAML response")
+
 
     def is_valid(self, request_data, request_id=None, raise_exceptions=False):
         """
