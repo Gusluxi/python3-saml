@@ -702,7 +702,10 @@ class OneLogin_Saml2_Utils(object):
         manager.add_key(xmlsec.Key.from_memory(key, xmlsec.KeyFormat.PEM, None))
         logger.info("something: enc_ctx = xmlsec.EncrpytionContext(manager)")
         enc_ctx = xmlsec.EncryptionContext(manager)
-        return enc_ctx.decrypt(encrypted_data)
+        logger.info("decrpyting enc_ctx.decrypt(encrypted_data)")
+        ctx_decrpyed = enc_ctx.decrypt(encrypted_data)
+        logger.info("Done: returning decry")
+        return ctx_decrpyed
 
     @staticmethod
     def add_sign(xml, key, cert, debug=False, sign_algorithm=OneLogin_Saml2_Constants.RSA_SHA256, digest_algorithm=OneLogin_Saml2_Constants.SHA256):
