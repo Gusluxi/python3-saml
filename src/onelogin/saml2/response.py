@@ -880,33 +880,45 @@ class OneLogin_Saml2_Response(object):
         :returns: Decrypted Assertion
         :rtype: Element
         """
+        logger.info("DECRPYTION:Decrypting Assertion Method started")
         key = self._settings.get_sp_key()
+        logger.info("DECRPYTION: Key gotten")
         debug = self._settings.is_debug_active()
+        logger.info("DECRPYTION: Debug checked")
 
         if not key:
             raise OneLogin_Saml2_Error(
                 'No private key available to decrypt the assertion, check settings',
                 OneLogin_Saml2_Error.PRIVATE_KEY_NOT_FOUND
             )
-
+        logger.info("DECRPYTION:Key exists")
         encrypted_assertion_nodes = OneLogin_Saml2_XML.query(xml, '/samlp:Response/saml:EncryptedAssertion')
+        logger.info("DECRPYTION:got encrypted_assertion_nodes")
         if encrypted_assertion_nodes:
             encrypted_data_nodes = OneLogin_Saml2_XML.query(encrypted_assertion_nodes[0], '//saml:EncryptedAssertion/xenc:EncryptedData')
+            logger.info("DECRPYTION:got encrypted_data_nodes")
             if encrypted_data_nodes:
                 keyinfo = OneLogin_Saml2_XML.query(encrypted_assertion_nodes[0], '//saml:EncryptedAssertion/xenc:EncryptedData/ds:KeyInfo')
+                logger.info("DECRPYTION:got keyinfo")
                 if not keyinfo:
+                    logger.info("DECRPYTION:nvm no keyinfo found")
                     raise OneLogin_Saml2_ValidationError(
                         'No KeyInfo present, invalid Assertion',
                         OneLogin_Saml2_ValidationError.KEYINFO_NOT_FOUND_IN_ENCRYPTED_DATA
                     )
                 keyinfo = keyinfo[0]
+                logger.info("DECRPYTION:got keyinfo[0]")
                 children = keyinfo.getchildren()
+                logger.info("DECRPYTION:got children")
                 if not children:
+                    logger.info("DECRPYTION:nvm no children found")
                     raise OneLogin_Saml2_ValidationError(
                         'KeyInfo has no children nodes, invalid Assertion',
                         OneLogin_Saml2_ValidationError.CHILDREN_NODE_NOT_FOUND_IN_KEYINFO
                     )
+                logger.info("DECRPYTION:looping children")
                 for child in children:
+                    logger.info(f"DECRPYTION:child: {child}")
                     if 'RetrievalMethod' in child.tag:
                         if child.attrib['Type'] != 'http://www.w3.org/2001/04/xmlenc#EncryptedKey':
                             raise OneLogin_Saml2_ValidationError(
@@ -920,10 +932,13 @@ class OneLogin_Saml2_Response(object):
                         encrypted_key = OneLogin_Saml2_XML.query(encrypted_assertion_nodes[0], './xenc:EncryptedKey[@Id=$tagid]', None, uri)
                         if encrypted_key:
                             keyinfo.append(encrypted_key[0])
-
+                logger.info("DECRPYTION: Done looping, getting encrypted_data")
                 encrypted_data = encrypted_data_nodes[0]
+                logger.info("DECRPYTION: finalizing decryption")
                 decrypted = OneLogin_Saml2_Utils.decrypt_element(encrypted_data, key, debug=debug, inplace=True)
+                logger.info("DECRPYTION: replacing encrpytion")
                 xml.replace(encrypted_assertion_nodes[0], decrypted)
+                logger.info("DECRPYTION: returning xml")
         return xml
 
     def get_error(self):
