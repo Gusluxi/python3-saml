@@ -39,33 +39,25 @@ class OneLogin_Saml2_Response(object):
         logger.info("RESPONSE: Initializing SAML response object")
         self._settings = settings
         self._error = None
-        try:
-            logger.info("RESPONSE: decoding b64")
-            self.response = OneLogin_Saml2_Utils.b64decode(response)
-            logger.info("RESPONSE: XML to etree")
-            self.document = OneLogin_Saml2_XML.to_etree(self.response)
-            logger.info("Decoded and parsed SAML response XML")
-        except Exception as e:
-            logger.error("Failed to decode or parse SAML response: %s", e)
-            raise
+        logger.info("RESPONSE: decoding b64")
+        self.response = OneLogin_Saml2_Utils.b64decode(response)
+        logger.info("RESPONSE: XML to etree")
+        self.document = OneLogin_Saml2_XML.to_etree(self.response)
+        logger.info("Decoded and parsed SAML response XML")
 
         self.decrypted_document = None
-        self.encrypted = False
+        self.encrypted = None
         self.valid_scd_not_on_or_after = None
 
         # Quick check for the presence of EncryptedAssertion
         encrypted_assertion_nodes = self._query('/samlp:Response/saml:EncryptedAssertion')
         if encrypted_assertion_nodes:
             logger.info("Encrypted assertion found, starting decryption")
-            try:
-                decrypted_document = deepcopy(self.document)
-                logger.info("Document decrypted")
-                self.encrypted = True
-                self.decrypted_document = self._decrypt_assertion(decrypted_document)
-                logger.info("Decrypted SAML assertion")
-            except Exception as e:
-                logger.error("Error decrypting SAML assertion: %s", e)
-                raise
+            decrypted_document = deepcopy(self.document)
+            logger.info("Document decrypted")
+            self.encrypted = True
+            self.decrypted_document = self._decrypt_assertion(decrypted_document)
+            logger.info("Decrypted SAML assertion")
         else:
             logger.info("No encrypted assertion found in SAML response")
 
